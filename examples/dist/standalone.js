@@ -8,9 +8,9 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null);
-var Input = (typeof window !== "undefined" ? window.AutosizeInput : typeof global !== "undefined" ? global.AutosizeInput : null);
-var classes = (typeof window !== "undefined" ? window.classNames : typeof global !== "undefined" ? global.classNames : null);
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null);
+var Input = (typeof window !== "undefined" ? window['AutosizeInput'] : typeof global !== "undefined" ? global['AutosizeInput'] : null);
+var classes = (typeof window !== "undefined" ? window['classNames'] : typeof global !== "undefined" ? global['classNames'] : null);
 var Value = require('./Value');
 
 var requestId = 0;
@@ -696,7 +696,7 @@ var Select = React.createClass({
 
 		return ops.length ? ops : React.createElement(
 			'div',
-			{ className: 'Select-noresults' },
+			{ className: "Select-noresults" },
 			this.props.asyncOptions && !this.state.inputValue ? this.props.searchPromptText : this.props.noResultsText
 		);
 	},
@@ -734,15 +734,25 @@ var Select = React.createClass({
 		}
 
 		if (!this.state.inputValue && (!this.props.multi || !value.length)) {
-			value.push(React.createElement(
-				'div',
-				{ className: 'Select-placeholder', key: 'placeholder' },
-				this.state.placeholder
-			));
+			if (this.props.valueRenderer && !!this.state.values.length) {
+				var val = this.state.values[0] || null;
+				console.log('select-value', this.state.values);
+				value.push(React.createElement(Value, {
+					key: 0,
+					option: val,
+					renderer: this.props.valueRenderer,
+					disabled: this.props.disabled }));
+			} else {
+				value.push(React.createElement(
+					'div',
+					{ className: "Select-placeholder", key: "placeholder" },
+					this.state.placeholder
+				));
+			}
 		}
 
-		var loading = this.state.isLoading ? React.createElement('span', { className: 'Select-loading', 'aria-hidden': 'true' }) : null;
-		var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
+		var loading = this.state.isLoading ? React.createElement('span', { className: "Select-loading", 'aria-hidden': "true" }) : null;
+		var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: "Select-clear", title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
 
 		var menu;
 		var menuProps;
@@ -756,7 +766,7 @@ var Select = React.createClass({
 			}
 			menu = React.createElement(
 				'div',
-				{ ref: 'selectMenuContainer', className: 'Select-menu-outer' },
+				{ ref: "selectMenuContainer", className: "Select-menu-outer" },
 				React.createElement(
 					'div',
 					menuProps,
@@ -781,7 +791,7 @@ var Select = React.createClass({
 
 		if (!this.props.disabled) {
 			if (this.props.searchable) {
-				input = React.createElement(Input, _extends({ value: this.state.inputValue, onChange: this.handleInputChange, minWidth: '5' }, inputProps));
+				input = React.createElement(Input, _extends({ value: this.state.inputValue, onChange: this.handleInputChange, minWidth: "5" }, inputProps));
 			} else {
 				input = React.createElement(
 					'div',
@@ -792,22 +802,22 @@ var Select = React.createClass({
 		} else if (!this.props.multi || !this.state.values.length) {
 			input = React.createElement(
 				'div',
-				{ className: 'Select-input' },
+				{ className: "Select-input" },
 				' '
 			);
 		}
 
 		return React.createElement(
 			'div',
-			{ ref: 'wrapper', className: selectClass },
-			React.createElement('input', { type: 'hidden', ref: 'value', name: this.props.name, value: this.state.value, disabled: this.props.disabled }),
+			{ ref: "wrapper", className: selectClass },
+			React.createElement('input', { type: "hidden", ref: "value", name: this.props.name, value: this.state.value, disabled: this.props.disabled }),
 			React.createElement(
 				'div',
-				{ className: 'Select-control', ref: 'control', onKeyDown: this.handleKeyDown, onMouseDown: this.handleMouseDown, onTouchEnd: this.handleMouseDown },
+				{ className: "Select-control", ref: "control", onKeyDown: this.handleKeyDown, onMouseDown: this.handleMouseDown, onTouchEnd: this.handleMouseDown },
 				value,
 				input,
-				React.createElement('span', { className: 'Select-arrow-zone', onMouseDown: this.handleMouseDownOnArrow }),
-				React.createElement('span', { className: 'Select-arrow', onMouseDown: this.handleMouseDownOnArrow }),
+				React.createElement('span', { className: "Select-arrow-zone", onMouseDown: this.handleMouseDownOnArrow }),
+				React.createElement('span', { className: "Select-arrow", onMouseDown: this.handleMouseDownOnArrow }),
 				loading,
 				clear
 			),
@@ -824,7 +834,7 @@ module.exports = Select;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null);
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null);
 
 var Value = React.createClass({
 
@@ -855,10 +865,18 @@ var Value = React.createClass({
 			label = this.props.renderer(this.props.option);
 		}
 
+		if (!this.props.onRemove && !this.props.optionLabelClick) {
+			return React.createElement(
+				'div',
+				{ className: "Select-value" },
+				label
+			);
+		}
+
 		if (this.props.optionLabelClick) {
 			label = React.createElement(
 				'a',
-				{ className: 'Select-item-label__a',
+				{ className: "Select-item-label__a",
 					onMouseDown: this.blockEvent,
 					onTouchEnd: this.props.onOptionLabelClick,
 					onClick: this.props.onOptionLabelClick },
@@ -868,10 +886,10 @@ var Value = React.createClass({
 
 		return React.createElement(
 			'div',
-			{ className: 'Select-item' },
+			{ className: "Select-item" },
 			React.createElement(
 				'span',
-				{ className: 'Select-item-icon',
+				{ className: "Select-item-icon",
 					onMouseDown: this.blockEvent,
 					onClick: this.handleOnRemove,
 					onTouchEnd: this.handleOnRemove },
@@ -879,7 +897,7 @@ var Value = React.createClass({
 			),
 			React.createElement(
 				'span',
-				{ className: 'Select-item-label' },
+				{ className: "Select-item-label" },
 				label
 			)
 		);
