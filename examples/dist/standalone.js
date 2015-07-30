@@ -736,7 +736,6 @@ var Select = React.createClass({
 		if (!this.state.inputValue && (!this.props.multi || !value.length)) {
 			if (this.props.valueRenderer && !!this.state.values.length) {
 				var val = this.state.values[0] || null;
-				console.log('select-value', this.state.values);
 				value.push(React.createElement(Value, {
 					key: 0,
 					option: val,
